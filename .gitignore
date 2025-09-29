@@ -1,0 +1,43 @@
+# Dependencies
+node_modules/
+vendor/
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# Build outputs
+/frontend/dist/
+/backend/public/hot
+/backend/public/storage
+/backend/storage/*.key
+
+# Cache and logs
+/backend/bootstrap/cache/*.php
+/backend/storage/logs/*.log
+/backend/storage/framework/cache/*
+/backend/storage/framework/sessions/*
+/backend/storage/framework/views/*
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Laravel specific
+/backend/public/mix-manifest.json
+/backend/.phpunit.result.cache
+/backend/Homestead.json
+/backend/Homestead.yaml
+/backend/npm-debug.log
+/backend/yarn-error.log
+
+# Frontend specific
+/frontend/.vite/
+/frontend/coverage/
