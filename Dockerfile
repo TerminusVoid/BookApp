@@ -24,8 +24,8 @@ WORKDIR /var/www/html
 # Copy backend files
 COPY backend/ .
 
-# Create startup script
-RUN echo '#!/bin/bash' > /usr/local/bin/start.sh && \
+# Create startup script using sh (more universal than bash)
+RUN echo '#!/bin/sh' > /usr/local/bin/start.sh && \
     echo 'set -e' >> /usr/local/bin/start.sh && \
     echo 'echo "Starting Laravel application setup..."' >> /usr/local/bin/start.sh && \
     echo 'composer dump-autoload --optimize' >> /usr/local/bin/start.sh && \
