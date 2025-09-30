@@ -7,6 +7,11 @@ echo "Starting Laravel setup..."
 composer dump-autoload --optimize
 php artisan package:discover --ansi
 
+# Force remove cached config files
+rm -f bootstrap/cache/config.php
+rm -f bootstrap/cache/routes.php
+rm -f bootstrap/cache/services.php
+
 # Clear all caches first to ensure fresh config
 php artisan config:clear
 php artisan route:clear
@@ -18,18 +23,30 @@ php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
+echo "Debug: Environment variables..."
+echo "DB_HOST from env: $(printenv DB_HOST)"
+echo "DB_PORT from env: $(printenv DB_PORT)"
+echo "DB_DATABASE from env: $(printenv DB_DATABASE)"
+echo "DB_USERNAME from env: $(printenv DB_USERNAME)"
+
 echo "Testing database connection..."
 php artisan tinker --execute="
+echo 'Laravel config values:';
+echo 'DB_HOST: ' . config('database.connections.mysql.host');
+echo 'DB_PORT: ' . config('database.connections.mysql.port');
+echo 'DB_DATABASE: ' . config('database.connections.mysql.database');
+echo 'DB_USERNAME: ' . config('database.connections.mysql.username');
+echo 'Environment values:';
+echo 'DB_HOST env: ' . env('DB_HOST');
+echo 'DB_PORT env: ' . env('DB_PORT');
+echo 'DB_DATABASE env: ' . env('DB_DATABASE');
+echo 'DB_USERNAME env: ' . env('DB_USERNAME');
 try {
     \$pdo = DB::connection()->getPdo();
     echo 'Database connection: SUCCESS';
     echo 'Connected to: ' . \$pdo->getAttribute(PDO::ATTR_SERVER_INFO);
 } catch (Exception \$e) {
     echo 'Database connection FAILED: ' . \$e->getMessage();
-    echo 'DB_HOST: ' . env('DB_HOST');
-    echo 'DB_PORT: ' . env('DB_PORT');
-    echo 'DB_DATABASE: ' . env('DB_DATABASE');
-    echo 'DB_USERNAME: ' . env('DB_USERNAME');
 }
 "
 
