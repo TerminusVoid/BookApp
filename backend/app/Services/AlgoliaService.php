@@ -24,7 +24,10 @@ class AlgoliaService
         $secret = Config::get('algolia.secret');
         
         if (!$appId || !$secret) {
-            throw new \Exception('Algolia credentials not configured');
+            Log::warning('Algolia credentials not configured - service will be disabled');
+            $this->client = null;
+            $this->indexName = null;
+            return;
         }
 
         $this->client = SearchClient::create($appId, $secret);
@@ -32,10 +35,23 @@ class AlgoliaService
     }
 
     /**
+     * Check if Algolia is properly configured
+     */
+    private function isConfigured(): bool
+    {
+        return $this->client !== null && $this->indexName !== null;
+    }
+
+    /**
      * Configure the books index with proper settings
      */
     public function configureIndex(): void
     {
+        if (!$this->isConfigured()) {
+            Log::warning('Algolia not configured - skipping index configuration');
+            return;
+        }
+
         $settings = Config::get('algolia.indices.books.settings');
         $this->client->setSettings($this->indexName, $settings);
         Log::info('Algolia books index configured successfully');

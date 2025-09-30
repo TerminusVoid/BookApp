@@ -22,8 +22,8 @@ WORKDIR /var/www/html
 # Copy backend files
 COPY backend/ .
 
-# Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader
+# Install PHP dependencies (skip scripts to avoid env issues during build)
+RUN composer install --no-dev --optimize-autoloader --no-scripts
 
 # Set proper permissions
 RUN chown -R www-data:www-data /var/www/html \
@@ -42,10 +42,7 @@ RUN echo '<VirtualHost *:80>\n\
     </Directory>\n\
 </VirtualHost>' > /etc/apache2/sites-available/000-default.conf
 
-# Cache Laravel configurations
-RUN php artisan config:cache && \
-    php artisan route:cache && \
-    php artisan view:cache
+# Note: Laravel caching will be done at runtime when env vars are available
 
 # Expose port 80
 EXPOSE 80
