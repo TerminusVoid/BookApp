@@ -53,6 +53,18 @@ try {
 echo "Running migrations..."
 php artisan migrate --force
 
+echo "Checking if database has books..."
+BOOK_COUNT=$(php artisan tinker --execute="echo App\Models\Book::count();")
+echo "Current book count: $BOOK_COUNT"
+
+if [ "$BOOK_COUNT" -eq "0" ]; then
+    echo "Database is empty, fetching some books..."
+    php artisan books:bulk-fetch --terms="fiction,science,technology,history,biography" --max-per-term=20 --delay=0.5
+    echo "Books fetched successfully!"
+else
+    echo "Database already has books, skipping fetch."
+fi
+
 # Configure Apache for Railway's PORT
 sed -i "s/PORT_PLACEHOLDER/$PORT/g" /etc/apache2/sites-available/000-default.conf
 echo "Listen $PORT" > /etc/apache2/ports.conf

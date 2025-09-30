@@ -22,8 +22,7 @@ return [
     'allowed_origins' => [
         'http://localhost:5173', 
         'http://127.0.0.1:5173',
-        // Add your Vercel domain here - replace with your actual Vercel URL
-        // 'https://your-app-name.vercel.app'
+        'https://web-production-61462.up.railway.app', // Your Railway backend URL
     ],
 
     'allowed_origins_patterns' => [

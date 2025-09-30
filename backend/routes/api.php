@@ -51,6 +51,17 @@ Route::get('/db-test', function () {
     }
 });
 
+// Debug endpoint
+Route::get('/test', function () {
+    return response()->json([
+        'status' => 'API is working',
+        'timestamp' => now(),
+        'method' => request()->method(),
+        'url' => request()->fullUrl(),
+        'headers' => request()->headers->all(),
+    ]);
+});
+
 // Public routes
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
