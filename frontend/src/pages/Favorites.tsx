@@ -30,13 +30,7 @@ const Favorites: React.FC = () => {
 
       if (response.data.success && response.data.data) {
         setBooks(response.data.data.books);
-        setPagination({
-          ...response.data.data.pagination,
-          current_page: parseInt(response.data.data.pagination.current_page, 10),
-          per_page: parseInt(response.data.data.pagination.per_page, 10),
-          total: parseInt(response.data.data.pagination.total, 10),
-          total_pages: parseInt(response.data.data.pagination.total_pages, 10),
-        });
+        setPagination(response.data.data.pagination);
       } else {
         setError('Failed to load favorites');
       }

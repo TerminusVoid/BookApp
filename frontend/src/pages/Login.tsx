@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { useToast } from '../contexts/ToastContext';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState(() => localStorage.getItem('login_email') || '');
@@ -10,7 +9,7 @@ const Login: React.FC = () => {
   const [error, setError] = useState(() => localStorage.getItem('login_error') || '');
 
   const { login } = useAuth();
-  const { showError, showSuccess } = useToast();
+  // const { showError, showSuccess } = useToast(); // Unused for now
   const navigate = useNavigate();
   const location = useLocation();
 

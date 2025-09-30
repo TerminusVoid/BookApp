@@ -186,11 +186,9 @@ class AlgoliaSearchService {
       const results = await searchClient.searchForFacetValues({
         indexName: ALGOLIA_CONFIG.indexName,
         facetName,
-        params: {
-          facetQuery: query,
-          maxFacetHits: 20,
-        }
-      });
+        facetQuery: query,
+        maxFacetHits: 20,
+      } as any);
 
       return results.facetHits.map((hit: any) => ({
         value: hit.value,

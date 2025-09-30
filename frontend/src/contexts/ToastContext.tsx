@@ -81,18 +81,14 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
     <ToastContext.Provider value={value}>
       {children}
       <div className="fixed top-4 right-4 z-50 space-y-2">
-        {console.log('Rendering toasts:', toasts)}
-        {toasts.map((toast) => {
-          console.log('Rendering individual toast:', toast);
-          return (
-            <Toast
-              key={toast.id}
-              message={toast.message}
-              type={toast.type}
-              onClose={() => removeToast(toast.id)}
-            />
-          );
-        })}
+        {toasts.map((toast) => (
+          <Toast
+            key={toast.id}
+            message={toast.message}
+            type={toast.type}
+            onClose={() => removeToast(toast.id)}
+          />
+        ))}
       </div>
     </ToastContext.Provider>
   );
