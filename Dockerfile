@@ -1,7 +1,7 @@
 # Use PHP 8.2 with Apache
 FROM php:8.2-apache
 
-# Install system dependencies
+# Install system dependencies including MySQL
 RUN apt-get update && apt-get install -y \
     git \
     curl \
@@ -11,6 +11,9 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip \
     libzip-dev \
+    mysql-server \
+    mysql-client \
+    supervisor \
     && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
@@ -24,9 +27,18 @@ WORKDIR /var/www/html
 # Copy backend files
 COPY backend/ .
 
+# Copy supervisor configuration
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
 # Copy Railway startup script
 COPY railway-start.sh /usr/local/bin/railway-start.sh
 RUN chmod +x /usr/local/bin/railway-start.sh
+
+# Configure MySQL
+RUN mkdir -p /var/log/supervisor && \
+    mkdir -p /var/run/mysqld && \
+    chown mysql:mysql /var/run/mysqld && \
+    mysql_install_db --user=mysql --datadir=/var/lib/mysql
 
 # Install PHP dependencies (skip scripts to avoid env issues during build)
 RUN composer install --no-dev --optimize-autoloader --no-scripts
