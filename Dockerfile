@@ -35,8 +35,8 @@ RUN chown -R www-data:www-data /var/www/html \
 # Enable Apache mod_rewrite
 RUN a2enmod rewrite
 
-# Copy Apache configuration
-RUN echo '<VirtualHost *:80>\n\
+# Copy Apache configuration template
+RUN echo '<VirtualHost *:PORT_PLACEHOLDER>\n\
     DocumentRoot /var/www/html/public\n\
     <Directory /var/www/html/public>\n\
         AllowOverride All\n\

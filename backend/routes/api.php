@@ -6,13 +6,10 @@ use App\Http\Controllers\FavoriteController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-// Health check endpoint
+// Health check endpoint - simple and reliable
 Route::get('/health', function () {
-    return response()->json([
-        'status' => 'ok', 
-        'timestamp' => date('Y-m-d H:i:s'),
-        'service' => 'BookApp API'
-    ], 200);
+    return response('OK', 200)
+        ->header('Content-Type', 'text/plain');
 });
 
 // Public routes
