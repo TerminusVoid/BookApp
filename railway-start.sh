@@ -1,21 +1,7 @@
 #!/bin/sh
 set -e
 
-echo "Starting MySQL and configuring database..."
-
-# Start MySQL service
-service mysql start
-
-# Wait for MySQL to be ready
-sleep 5
-
-# Create database and user
-mysql -u root -e "CREATE DATABASE IF NOT EXISTS bookapp;"
-mysql -u root -e "CREATE USER IF NOT EXISTS 'bookapp'@'localhost' IDENTIFIED BY 'bookapp123';"
-mysql -u root -e "GRANT ALL PRIVILEGES ON bookapp.* TO 'bookapp'@'localhost';"
-mysql -u root -e "FLUSH PRIVILEGES;"
-
-echo "MySQL setup complete. Starting Laravel setup..."
+echo "Starting Laravel setup..."
 
 # Laravel setup
 composer dump-autoload --optimize
@@ -40,6 +26,10 @@ try {
     echo 'Connected to: ' . \$pdo->getAttribute(PDO::ATTR_SERVER_INFO);
 } catch (Exception \$e) {
     echo 'Database connection FAILED: ' . \$e->getMessage();
+    echo 'DB_HOST: ' . env('DB_HOST');
+    echo 'DB_PORT: ' . env('DB_PORT');
+    echo 'DB_DATABASE: ' . env('DB_DATABASE');
+    echo 'DB_USERNAME: ' . env('DB_USERNAME');
 }
 "
 
@@ -51,10 +41,5 @@ sed -i "s/PORT_PLACEHOLDER/$PORT/g" /etc/apache2/sites-available/000-default.con
 echo "Listen $PORT" > /etc/apache2/ports.conf
 echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
-echo "Starting services with supervisor..."
-
-# Stop MySQL service (supervisor will manage it)
-service mysql stop
-
-# Start supervisor to manage both MySQL and Apache
-exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
+echo "Starting Apache..."
+exec apache2-foreground

@@ -48,7 +48,8 @@ return [
             'strict' => true,
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
-                // No SSL configuration needed for Railway MySQL
+                // Disable SSL for now to simplify Aiven connection
+                PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false,
             ]) : [],
         ],
 
@@ -68,7 +69,8 @@ return [
             'strict' => true,
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
-                // No SSL configuration needed for Railway MySQL
+                // Disable SSL for now to simplify Aiven connection
+                PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false,
             ]) : [],
         ],
 
