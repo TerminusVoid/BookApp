@@ -25,31 +25,19 @@ WORKDIR /var/www/html
 COPY backend/ .
 
 # Create startup script
-COPY <<EOF /usr/local/bin/start.sh
-#!/bin/bash
-set -e
-
-echo "Starting Laravel application setup..."
-
-# Run composer scripts now that env vars are available
-composer dump-autoload --optimize
-php artisan package:discover --ansi
-
-# Cache Laravel configurations
-php artisan config:cache
-php artisan route:cache  
-php artisan view:cache
-
-# Run migrations
-php artisan migrate --force
-
-echo "Laravel setup complete, starting Apache..."
-
-# Start Apache in foreground
-exec apache2-foreground
-EOF
-
-RUN chmod +x /usr/local/bin/start.sh
+RUN echo '#!/bin/bash' > /usr/local/bin/start.sh && \
+    echo 'set -e' >> /usr/local/bin/start.sh && \
+    echo 'echo "Starting Laravel application setup..."' >> /usr/local/bin/start.sh && \
+    echo 'cd /var/www/html' >> /usr/local/bin/start.sh && \
+    echo 'composer dump-autoload --optimize' >> /usr/local/bin/start.sh && \
+    echo 'php artisan package:discover --ansi' >> /usr/local/bin/start.sh && \
+    echo 'php artisan config:cache' >> /usr/local/bin/start.sh && \
+    echo 'php artisan route:cache' >> /usr/local/bin/start.sh && \
+    echo 'php artisan view:cache' >> /usr/local/bin/start.sh && \
+    echo 'php artisan migrate --force' >> /usr/local/bin/start.sh && \
+    echo 'echo "Laravel setup complete, starting Apache..."' >> /usr/local/bin/start.sh && \
+    echo 'exec apache2-foreground' >> /usr/local/bin/start.sh && \
+    chmod +x /usr/local/bin/start.sh
 
 # Install PHP dependencies (skip scripts to avoid env issues during build)
 RUN composer install --no-dev --optimize-autoloader --no-scripts
