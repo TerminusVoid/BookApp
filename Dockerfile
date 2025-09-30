@@ -28,7 +28,6 @@ COPY backend/ .
 RUN echo '#!/bin/bash' > /usr/local/bin/start.sh && \
     echo 'set -e' >> /usr/local/bin/start.sh && \
     echo 'echo "Starting Laravel application setup..."' >> /usr/local/bin/start.sh && \
-    echo 'cd /var/www/html' >> /usr/local/bin/start.sh && \
     echo 'composer dump-autoload --optimize' >> /usr/local/bin/start.sh && \
     echo 'php artisan package:discover --ansi' >> /usr/local/bin/start.sh && \
     echo 'php artisan config:cache' >> /usr/local/bin/start.sh && \
