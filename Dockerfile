@@ -24,19 +24,9 @@ WORKDIR /var/www/html
 # Copy backend files
 COPY backend/ .
 
-# Create startup script using sh (more universal than bash)
-RUN echo '#!/bin/sh' > /usr/local/bin/start.sh && \
-    echo 'set -e' >> /usr/local/bin/start.sh && \
-    echo 'echo "Starting Laravel application setup..."' >> /usr/local/bin/start.sh && \
-    echo 'composer dump-autoload --optimize' >> /usr/local/bin/start.sh && \
-    echo 'php artisan package:discover --ansi' >> /usr/local/bin/start.sh && \
-    echo 'php artisan config:cache' >> /usr/local/bin/start.sh && \
-    echo 'php artisan route:cache' >> /usr/local/bin/start.sh && \
-    echo 'php artisan view:cache' >> /usr/local/bin/start.sh && \
-    echo 'php artisan migrate --force' >> /usr/local/bin/start.sh && \
-    echo 'echo "Laravel setup complete, starting Apache..."' >> /usr/local/bin/start.sh && \
-    echo 'exec apache2-foreground' >> /usr/local/bin/start.sh && \
-    chmod +x /usr/local/bin/start.sh
+# Create entrypoint script
+RUN printf '#!/bin/sh\nset -e\necho "Starting Laravel setup..."\ncomposer dump-autoload --optimize\nphp artisan package:discover --ansi\nphp artisan config:cache\nphp artisan route:cache\nphp artisan view:cache\nphp artisan migrate --force\necho "Starting Apache..."\nexec apache2-foreground\n' > /usr/local/bin/docker-entrypoint.sh && \
+    chmod +x /usr/local/bin/docker-entrypoint.sh
 
 # Install PHP dependencies (skip scripts to avoid env issues during build)
 RUN composer install --no-dev --optimize-autoloader --no-scripts
@@ -61,5 +51,5 @@ RUN echo '<VirtualHost *:80>\n\
 # Expose port 80
 EXPOSE 80
 
-# Start with our custom script
-CMD ["/usr/local/bin/start.sh"]
+# Use ENTRYPOINT instead of CMD for better control
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
