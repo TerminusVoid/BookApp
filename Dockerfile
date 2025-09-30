@@ -24,12 +24,6 @@ WORKDIR /var/www/html
 # Copy backend files
 COPY backend/ .
 
-# Copy startup script
-COPY start.sh /usr/local/bin/start.sh
-RUN chmod +x /usr/local/bin/start.sh
-
-# No custom scripts - let Railway handle startup
-
 # Install PHP dependencies (skip scripts to avoid env issues during build)
 RUN composer install --no-dev --optimize-autoloader --no-scripts
 
@@ -53,5 +47,5 @@ RUN echo '<VirtualHost *:80>\n\
 # Expose port 80
 EXPOSE 80
 
-# Use our startup script
-CMD ["/usr/local/bin/start.sh"]
+# Start Apache directly - no custom scripts
+CMD ["apache2-foreground"]

@@ -5,6 +5,7 @@
     "dockerfilePath": "Dockerfile"
   },
   "deploy": {
+    "startCommand": "composer dump-autoload --optimize; php artisan package:discover --ansi; php artisan config:cache; php artisan route:cache; php artisan view:cache; php artisan migrate --force; apache2-foreground",
     "healthcheckPath": "/api/health",
     "healthcheckTimeout": 300
   }
