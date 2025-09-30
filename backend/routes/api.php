@@ -12,6 +12,45 @@ Route::get('/health', function () {
         ->header('Content-Type', 'text/plain');
 });
 
+// Database connection test endpoint
+Route::get('/db-test', function () {
+    try {
+        $pdo = DB::connection()->getPdo();
+        $serverInfo = $pdo->getAttribute(PDO::ATTR_SERVER_INFO);
+        
+        // Test a simple query
+        $result = DB::select('SELECT 1 as test');
+        
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Database connection working',
+            'server_info' => $serverInfo,
+            'test_query' => $result[0]->test ?? 'failed',
+            'ssl_ca_exists' => file_exists(base_path('aiven-ca.pem')),
+            'env_check' => [
+                'DB_HOST' => env('DB_HOST'),
+                'DB_PORT' => env('DB_PORT'),
+                'DB_DATABASE' => env('DB_DATABASE'),
+                'DB_USERNAME' => env('DB_USERNAME'),
+                'DB_CONNECTION' => env('DB_CONNECTION'),
+            ]
+        ]);
+    } catch (Exception $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => $e->getMessage(),
+            'ssl_ca_exists' => file_exists(base_path('aiven-ca.pem')),
+            'env_check' => [
+                'DB_HOST' => env('DB_HOST'),
+                'DB_PORT' => env('DB_PORT'),
+                'DB_DATABASE' => env('DB_DATABASE'),
+                'DB_USERNAME' => env('DB_USERNAME'),
+                'DB_CONNECTION' => env('DB_CONNECTION'),
+            ]
+        ], 500);
+    }
+});
+
 // Public routes
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
