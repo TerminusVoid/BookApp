@@ -24,9 +24,7 @@ WORKDIR /var/www/html
 # Copy backend files
 COPY backend/ .
 
-# Create entrypoint script
-RUN printf '#!/bin/sh\nset -e\necho "Starting Laravel setup..."\ncomposer dump-autoload --optimize\nphp artisan package:discover --ansi\nphp artisan config:cache\nphp artisan route:cache\nphp artisan view:cache\nphp artisan migrate --force\necho "Starting Apache..."\nexec apache2-foreground\n' > /usr/local/bin/docker-entrypoint.sh && \
-    chmod +x /usr/local/bin/docker-entrypoint.sh
+# No custom scripts - let Railway handle startup
 
 # Install PHP dependencies (skip scripts to avoid env issues during build)
 RUN composer install --no-dev --optimize-autoloader --no-scripts
@@ -51,5 +49,5 @@ RUN echo '<VirtualHost *:80>\n\
 # Expose port 80
 EXPOSE 80
 
-# Use ENTRYPOINT instead of CMD for better control
-ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+# Start Apache directly
+CMD ["apache2-foreground"]
