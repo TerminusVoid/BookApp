@@ -11,7 +11,9 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip \
     libzip-dev \
-    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
+    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -21,6 +23,33 @@ WORKDIR /var/www/html
 
 # Copy backend files
 COPY backend/ .
+
+# Create startup script
+COPY <<EOF /usr/local/bin/start.sh
+#!/bin/bash
+set -e
+
+echo "Starting Laravel application setup..."
+
+# Run composer scripts now that env vars are available
+composer dump-autoload --optimize
+php artisan package:discover --ansi
+
+# Cache Laravel configurations
+php artisan config:cache
+php artisan route:cache  
+php artisan view:cache
+
+# Run migrations
+php artisan migrate --force
+
+echo "Laravel setup complete, starting Apache..."
+
+# Start Apache in foreground
+exec apache2-foreground
+EOF
+
+RUN chmod +x /usr/local/bin/start.sh
 
 # Install PHP dependencies (skip scripts to avoid env issues during build)
 RUN composer install --no-dev --optimize-autoloader --no-scripts
@@ -42,10 +71,8 @@ RUN echo '<VirtualHost *:80>\n\
     </Directory>\n\
 </VirtualHost>' > /etc/apache2/sites-available/000-default.conf
 
-# Note: Laravel caching will be done at runtime when env vars are available
-
 # Expose port 80
 EXPOSE 80
 
-# Start Apache
-CMD ["apache2-foreground"]
+# Start with our custom script
+CMD ["/usr/local/bin/start.sh"]

@@ -8,7 +8,11 @@ use Illuminate\Support\Facades\Route;
 
 // Health check endpoint
 Route::get('/health', function () {
-    return response()->json(['status' => 'ok', 'timestamp' => now()]);
+    return response()->json([
+        'status' => 'ok', 
+        'timestamp' => date('Y-m-d H:i:s'),
+        'service' => 'BookApp API'
+    ], 200);
 });
 
 // Public routes
