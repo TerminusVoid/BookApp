@@ -4,6 +4,14 @@ set -e
 # Laravel setup
 composer dump-autoload --optimize
 php artisan package:discover --ansi
+
+# Clear all caches first to ensure fresh config
+php artisan config:clear
+php artisan route:clear
+php artisan view:clear
+php artisan cache:clear
+
+# Then cache with fresh environment variables
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
