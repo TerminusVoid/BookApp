@@ -1,7 +1,7 @@
 # Use PHP 8.2 with Apache
 FROM php:8.2-apache
 
-# Install system dependencies including MariaDB (MySQL-compatible)
+# Install system dependencies including MySQL
 RUN apt-get update && apt-get install -y \
     git \
     curl \
@@ -11,10 +11,20 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip \
     libzip-dev \
-    mariadb-server \
-    mariadb-client \
     supervisor \
+    wget \
+    lsb-release \
+    gnupg \
     && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install MySQL 8.0
+RUN wget https://dev.mysql.com/get/mysql-apt-config_0.8.29-1_all.deb \
+    && DEBIAN_FRONTEND=noninteractive dpkg -i mysql-apt-config_0.8.29-1_all.deb \
+    && apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y mysql-server mysql-client \
+    && rm mysql-apt-config_0.8.29-1_all.deb \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -34,11 +44,11 @@ COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY railway-start.sh /usr/local/bin/railway-start.sh
 RUN chmod +x /usr/local/bin/railway-start.sh
 
-# Configure MariaDB
+# Configure MySQL
 RUN mkdir -p /var/log/supervisor && \
     mkdir -p /var/run/mysqld && \
     chown mysql:mysql /var/run/mysqld && \
-    mysql_install_db --user=mysql --datadir=/var/lib/mysql --auth-root-authentication-method=normal
+    mysqld --initialize-insecure --user=mysql --datadir=/var/lib/mysql
 
 # Install PHP dependencies (skip scripts to avoid env issues during build)
 RUN composer install --no-dev --optimize-autoloader --no-scripts

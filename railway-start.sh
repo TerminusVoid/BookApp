@@ -1,21 +1,21 @@
 #!/bin/sh
 set -e
 
-echo "Starting MariaDB and configuring database..."
+echo "Starting MySQL and configuring database..."
 
-# Start MariaDB service
-service mariadb start
+# Start MySQL service
+service mysql start
 
-# Wait for MariaDB to be ready
+# Wait for MySQL to be ready
 sleep 5
 
 # Create database and user
-mariadb -u root -e "CREATE DATABASE IF NOT EXISTS bookapp;"
-mariadb -u root -e "CREATE USER IF NOT EXISTS 'bookapp'@'localhost' IDENTIFIED BY 'bookapp123';"
-mariadb -u root -e "GRANT ALL PRIVILEGES ON bookapp.* TO 'bookapp'@'localhost';"
-mariadb -u root -e "FLUSH PRIVILEGES;"
+mysql -u root -e "CREATE DATABASE IF NOT EXISTS bookapp;"
+mysql -u root -e "CREATE USER IF NOT EXISTS 'bookapp'@'localhost' IDENTIFIED BY 'bookapp123';"
+mysql -u root -e "GRANT ALL PRIVILEGES ON bookapp.* TO 'bookapp'@'localhost';"
+mysql -u root -e "FLUSH PRIVILEGES;"
 
-echo "MariaDB setup complete. Starting Laravel setup..."
+echo "MySQL setup complete. Starting Laravel setup..."
 
 # Laravel setup
 composer dump-autoload --optimize
@@ -53,8 +53,8 @@ echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
 echo "Starting services with supervisor..."
 
-# Stop MariaDB service (supervisor will manage it)
-service mariadb stop
+# Stop MySQL service (supervisor will manage it)
+service mysql stop
 
-# Start supervisor to manage both MariaDB and Apache
+# Start supervisor to manage both MySQL and Apache
 exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
