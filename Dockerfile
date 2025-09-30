@@ -24,6 +24,10 @@ WORKDIR /var/www/html
 # Copy backend files
 COPY backend/ .
 
+# Copy Railway startup script
+COPY railway-start.sh /usr/local/bin/railway-start.sh
+RUN chmod +x /usr/local/bin/railway-start.sh
+
 # Install PHP dependencies (skip scripts to avoid env issues during build)
 RUN composer install --no-dev --optimize-autoloader --no-scripts
 
