@@ -12,8 +12,8 @@ use Carbon\Carbon;
 
 class AlgoliaService
 {
-    private SearchClient $client;
-    private string $indexName;
+    private ?SearchClient $client;
+    private ?string $indexName;
     private GoogleBooksService $googleBooksService;
 
     public function __construct(GoogleBooksService $googleBooksService)
